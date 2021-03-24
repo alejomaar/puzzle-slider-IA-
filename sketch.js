@@ -51,7 +51,23 @@ function checkwin(){
     }
     return true;
 }
+function moveRandom(){
+    horizontalmove = [1,-1];
+    verticalmove = [1,-1];
+    maxspace = subdivitions-1;
+    if(xactive==maxspace)
+        horizontalmove=-1
+    if(xactive==0)
+        horizontalmove=1
+    if(yactive==maxspace)
+        verticalmove=-1
+    if(yactive==0)
+        verticalmove=1
+    MoveX = random(horizontalmove);
+    MoveY = random(verticalmove);
+    
 
+}
 
 function fillpuzzle(sub){
     //Fill number posibles in array
