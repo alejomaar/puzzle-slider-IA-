@@ -1,15 +1,16 @@
 function renderpuzzlenumbers(){
     fill(color('black')); 
-    puzzle.forEach((row,rowindex )=> {
+    puzzle.puzzle.forEach((row,rowindex )=> {
         row.forEach((value,columnindex)=>{
             RenderNumber(value,rowindex,columnindex);
         })
     });
 }
-function updatePaint(Xselected,Yselected){
+function updatePaint(Yselected,Xselected){
+    [yactive,xactive]= puzzle.activeIndex();
     Noempty(xactive,yactive);
     empty(Xselected,Yselected);
-    RenderNumber(puzzle[Yselected][Xselected],yactive,xactive);
+    RenderNumber(puzzle.puzzle[Yselected][Xselected],yactive,xactive);
 }
 
 function RenderNumber(value,rowindex,columnindex){
