@@ -1,10 +1,10 @@
-var size=0;
+var size=0; //grafica
 var xactive=0;
 var yactive=0;
 var subdivitions = 3;
 var puzzle;
 function setup(){
-    puzzle =  new Puzzle(subdivitions);
+    puzzle =  Puzzle.IdentityPuzzle(subdivitions);
     //UI preparate
     createCanvas(500,500);
     background(0,0,0);
@@ -65,6 +65,9 @@ function isNear(Xselected,Yselected){
     return Math.abs(Xselected-xactive)+Math.abs(Yselected-yactive)==1;
 }
 
-
+/*
+node = new Node(puzzle)
+node.AddBranch(2);
+*/
 
 

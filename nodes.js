@@ -1,37 +1,90 @@
 
 
-class node{
-    constructor(data,parent=null){  
+class Node{
+    constructor(data,parent=null,lastMove=null){  
         this.data = data;
         this.parent = parent;
         this.children = [];
+        this.lastMove = lastMove;
         //this.sub = this.data.length;
     }
-    AddBranch(){
-        var Move = ["right","up","left","down"];
-        Move = this.data.constrainMove(Move);
-        if(Move.includes("right")){
-            this.generateChildren(0,1);
+    AddBranch(depth){
+        if(depth>0){
+            var Move = ["right","up","left","down"];
+            Move = this.data.constrainMove(Move);
+
+            //Remove Last movement 
+            if(this.parent!==null){
+               // console.log("Constrain:(-)"+this.lastMove);
+                Move = this.data.constrainReturn(Move,this.lastMove);
+            }
+            //Add childrens avaibles
+
+            if(Move.includes("right")){
+                //console.log("Depth:"+depth+" Move:Right");
+                this.generateChildren(0,1,depth,"right");
+            }
+            if(Move.includes("up")){
+                //console.log("Depth:"+depth+" Move:Up");
+                this.generateChildren(1,0,depth,"up");
+            }
+            if(Move.includes("left")){
+               // console.log("Depth:"+depth+" Move:Left");
+                this.generateChildren(0,-1,depth,"left");
+            }
+            if(Move.includes("down")){
+                ///console.log("Depth:"+depth+" Move:Down");
+                this.generateChildren(-1,0,depth,"down");
+            }
         }
-        if(Move.includes("up")){
-            this.generateChildren(1,0);
-        }
-        if(Move.includes("left")){
-            this.generateChildren(0,-1);
-        }
-        if(Move.includes("down")){
-            this.generateChildren(-1,0);
-        }   
+           
     }
-    generateChildren(Ymove,Xmove){
-        var ChildrenCopy = Object.assign({}, this.data);
-        console.log(ChildrenCopy);
+    generateChildren(Ymove,Xmove,depth,lastMoveChildren){
+        //Copy actual puzzle
+        var ChildrenCopy = Puzzle.CopyPuzzle(this.data);
+        //Move puzzle to new position
         [yactive,xactive]= ChildrenCopy.activeIndex();
-        //new Object with right move
         ChildrenCopy.updateValues(yactive+ Ymove,xactive+Xmove);
-        this.children.push(ChildrenCopy);
+       // console.log("Gane:"+ChildrenCopy.isObjective());
+        //console.log(ChildrenCopy.puzzle);
+        
+        //Add to tree
+        var newNode = new Node(ChildrenCopy,this,lastMoveChildren);
+        this.children.push(newNode);
+
+        /*if(ChildrenCopy.isObjective()){
+            console.log("Gane");
+            this.PrintRute(newNode);
+        }*/
+
+        //Generate new Childrens
+        newNode.AddBranch(depth-1);     
     }
 
+    PrintRute(NodeWinner){
+        var lastMove = this.lastMove;
+        var currentNode = NodeWinner;
+        while(lastMove!==null){
+            console.log("Mov:"+lastMove);
+            currentNode= NodeWinner.parent;
+            lastMove= currentNode.lastMove;
+        }
+    }
+
+    constrainReturn(Move){
+        if(Move.includes(this.lastMove)){
+            if(this.lastMove=="right")
+                Move.splice(Move.indexOf("left"),1);
+            else if(this.lastMove=="left")
+                Move.splice(Move.indexOf("right"),1);
+            else if(this.lastMove=="up")
+                Move.splice(Move.indexOf("down"),1); 
+            else if(this.lastMove=="down")
+                Move.splice(Move.indexOf("up"),1);
+        }
+        return Move;     
+    }
+    
 
     /*addchildren(data){
         var newChildren = new node(data,this);
@@ -43,17 +96,26 @@ class node{
 
 
 class Puzzle{
-   /* static IdentityPuzzle(){
+    static CopyPuzzle(puzzle){
+        var DeepCopyData = JSON.parse(JSON.stringify(puzzle.puzzle))
+        return new Puzzle(puzzle.sub,DeepCopyData,puzzle.Xactive,puzzle.Yactive)
+        //[...] Operator clone a puzzle array
+    }
+    //Multimedia hpta vida gonorrea :'v mk ya, quiero disfrutar semana santa alv
+    static IdentityPuzzle(subdivition){
+        var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
+        puzzle.puzzle = puzzle.fillPuzzle()
+        puzzle.randomizePuzzle(3);
+        return puzzle;
+    }
 
-    }*/
-
-    constructor(subdivition){
+    constructor(subdivition,puzzle,Xactive,Yactive){
         this.sub = subdivition;
-        this.puzzle = this.fillPuzzle();
-        this.Xactive = subdivition-1;
-        this.Yactive = subdivition-1;
-        this.lastMove = null;
-        this.randomizePuzzle(4);   
+        this.puzzle = puzzle;
+        this.Xactive = Xactive;
+        this.Yactive = Yactive;
+        //this.lastMove = null;
+        //this.randomizePuzzle(4);   
 
     }
     fillPuzzle(){
@@ -71,10 +133,9 @@ class Puzzle{
         return puzzle;
     }
     randomizePuzzle(iterations){
-    //console.log("MaxSpace:"+xactive+yactive)
         var lastMove = "up";    
         for(var iter=0;iter<iterations;iter++){
-            console.log("iter:"+iter)
+            //console.log("iter:"+iter)
             var Move = ["right","up","left","down"];
             var MoveX=0;
             var MoveY=0;
@@ -99,9 +160,6 @@ class Puzzle{
 
             var Xselected= this.Xactive+MoveX;
             var Yselected= this.Yactive+MoveY; 
-            console.log(MoveRandom);
-            //console.log(Xselected+"/"+Yselected);
-            //updatePaint(Xselected,Yselected);
             this.updateValues(Yselected,Xselected);
             lastMove = MoveRandom;
         }
@@ -135,11 +193,8 @@ class Puzzle{
 
     random(values) {
         var randomvalue = Math.floor(Math.random()*values.length)
-        //console.log(randomvalue);
         return values[randomvalue];
     }
-
-
     updateValues(Yselected,Xselected){
         var X = this.Xactive;
         var Y= this.Yactive;
@@ -151,6 +206,20 @@ class Puzzle{
         this.puzzle= Data;
         this.Xactive=Xselected;
         this.Yactive=Yselected;
+    }
+    isObjective(){
+        var puzzledata= this.puzzle;
+        var puzzleIdentidad = this.fillPuzzle();
+        for (var rowindex= 0; rowindex < this.sub; rowindex++) {
+            for (var colindex= 0; colindex < this.sub; colindex++) {
+                if(puzzledata[rowindex][colindex]!=rowindex*this.sub+colindex){
+                //if(puzzledata[rowindex][colindex]!=puzzleIdentidad[rowindex][colindex]){
+                    console.log("X:"+colindex+"Y:"+rowindex)
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     
