@@ -47,28 +47,25 @@ class Node{
         ChildrenCopy.updateValues(yactive+ Ymove,xactive+Xmove);
        // console.log("Gane:"+ChildrenCopy.isObjective());
         //console.log(ChildrenCopy.puzzle);
-        
         //Add to tree
         var newNode = new Node(ChildrenCopy,this,lastMoveChildren);
         this.children.push(newNode);
-
-        /*if(ChildrenCopy.isObjective()){
+        if(ChildrenCopy.isObjective()){
             console.log("Gane");
             this.PrintRute(newNode);
-        }*/
-
+        }
         //Generate new Childrens
         newNode.AddBranch(depth-1);     
     }
 
     PrintRute(NodeWinner){
-        var lastMove = this.lastMove;
+        
         var currentNode = NodeWinner;
-        while(lastMove!==null){
-            console.log("Mov:"+lastMove);
-            currentNode= NodeWinner.parent;
-            lastMove= currentNode.lastMove;
+        while(currentNode.parent!=null){
+            console.log(currentNode.lastMove);
+            currentNode = currentNode.parent;
         }
+        
     }
 
     constrainReturn(Move){
@@ -86,12 +83,6 @@ class Node{
     }
     
 
-    /*addchildren(data){
-        var newChildren = new node(data,this);
-        this.children.push(newChildren)
-        return newChildren;
-    }*/
-
 }
 
 
@@ -105,7 +96,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(3);
+        puzzle.randomizePuzzle(6);
         return puzzle;
     }
 
@@ -214,7 +205,7 @@ class Puzzle{
             for (var colindex= 0; colindex < this.sub; colindex++) {
                 if(puzzledata[rowindex][colindex]!=rowindex*this.sub+colindex){
                 //if(puzzledata[rowindex][colindex]!=puzzleIdentidad[rowindex][colindex]){
-                    console.log("X:"+colindex+"Y:"+rowindex)
+                    //console.log("X:"+colindex+"Y:"+rowindex)
                     return false;
                 }
             }
