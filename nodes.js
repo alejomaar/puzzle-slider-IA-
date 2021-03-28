@@ -4,50 +4,90 @@ node.DeepFirst();
 */
 
 class Node{
-    constructor(data,parent=null,lastMove=null,depth=null){  
+    constructor(data,parent=null,lastMove=null,depth=0){  
         this.data = data;
         this.parent = parent;
         this.children = [];
         this.lastMove = lastMove;
-        this.MoveExplored = [];
+        this.AvaibleMovements = this.getAvaibleMovements();
         this.depth = depth;
         //this.sub = this.data.length;
     }
 
+    getAvaibleMovements(){
+        //Posible movements
+        var Move = ["right","up","left","down"];
+        //Add constrains to movements
+        Move = this.data.constrainMove(Move);       
+        if(this.parent!==null){
+            Move = this.data.constrainReturn(Move,this.lastMove);
+        }
+        return Move;
+    }
+
     DeepFirst(){
-        var currentNode= this;
-        var maxdepth = 5;
-        //currentNode.depth=0;
-        //Searching in the first branch
-        for(var deep=0;deep<maxdepth;deep++){
-            var MoveTxt = this.SelectMoveTxt(currentNode);
+        var currentNode = this;
+        var maxdepth = 13;
+        //Search in all branch
+        while(currentNode.depth<maxdepth){
+            var MoveTxt = currentNode.SelectMoveTxt();
             var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
             if(isWin)
                 break;
             else{
-                console.log(childrenNode.data.puzzle)
+                //console.log("Depth: "+childrenNode.depth);
+                //console.log(childrenNode.data.puzzle);
                 currentNode = childrenNode;
-                console.log(childrenNode.depth)
             }
         }
-
-        //currentNode = currentNode.parent;
-
-
-
-    }
-    SelectMoveTxt(currentNode){
-        //Posible movements
-        var Move = ["right","up","left","down"];
-        //Add constrains to movements
-        Move = currentNode.data.constrainMove(Move);       
-        if(currentNode.parent!==null){
-            Move = currentNode.data.constrainReturn(Move,currentNode.lastMove);
+        //Change of branch
+        if(!isWin){
+            currentNode= currentNode.parent;
+            var iscompleted = false;
+            //Select no branch explored
+            while(currentNode.isExplored()){
+                if(currentNode.isRoot()){
+                    iscompleted=true;
+                    break;
+                }
+                var lastNode = currentNode;
+                currentNode = currentNode.parent;
+                //delete lastNode;
+                currentNode.children.splice(currentNode.children.indexOf(lastNode),1)
+            }
+            //end search, if all nodes have been searched
+            if(!iscompleted)
+                currentNode.DeepFirst();
+            
         }
-        //Select any movement posible 
-        var MoveSelected = currentNode.random(Move);
-        //Add to move explored
-        currentNode.MoveExplored.push(MoveSelected);
+        
+        
+        
+    }
+    isExplored(){
+        if(this.AvaibleMovements.length==0)
+            return true;
+        else
+            return false;
+    }
+
+    isRoot(){
+        if(this.parent==null)
+            return true;
+        else
+            return false;
+    }
+    /*constrainExplored(move){
+        this.MoveExplored.forEach(MovementDone=>{
+            if(move.includes(MovementDone))
+                move.splice(move.indexOf(MovementDone),1);
+        });
+    }*/
+    SelectMoveTxt(){
+        //Select Posible movements
+        var MoveSelected = this.random(this.AvaibleMovements);
+        //Delete of possible movements
+        this.AvaibleMovements.splice(this.AvaibleMovements.indexOf(MoveSelected),1);
         return MoveSelected;
     }
 
@@ -66,7 +106,7 @@ class Node{
 
     generateChildren(node,lastMoveChildren){
         var [MoveY,MoveX]= node.SelectMove(lastMoveChildren);
-        console.log("Move:"+lastMoveChildren+" X:"+MoveX+" Y:"+MoveY)
+       // console.log("Move:"+lastMoveChildren+" X:"+MoveX+" Y:"+MoveY)
         //console.log("Move:"+MoveSelected+" X:"+MoveX+" Y:"+MoveY)
         //Copy actual puzzle
         var ChildrenCopy = Puzzle.CopyPuzzle(this.data);
@@ -95,24 +135,12 @@ class Node{
     PrintRute(NodeWinner){
         var currentNode = NodeWinner;
         while(currentNode.parent!=null){
-            console.log(currentNode.lastMove);
+            console.log("D:"+currentNode.depth+"Move:"+ currentNode.lastMove);
             currentNode = currentNode.parent;
         }
     }
 
-    constrainReturn(Move){
-        if(Move.includes(this.lastMove)){
-            if(this.lastMove=="right")
-                Move.splice(Move.indexOf("left"),1);
-            else if(this.lastMove=="left")
-                Move.splice(Move.indexOf("right"),1);
-            else if(this.lastMove=="up")
-                Move.splice(Move.indexOf("down"),1); 
-            else if(this.lastMove=="down")
-                Move.splice(Move.indexOf("up"),1);
-        }
-        return Move;     
-    }
+   
     
 
 }
@@ -120,15 +148,19 @@ class Node{
 
 class Puzzle{
     static CopyPuzzle(puzzle){
-        var DeepCopyData = JSON.parse(JSON.stringify(puzzle.puzzle))
-        return new Puzzle(puzzle.sub,DeepCopyData,puzzle.Xactive,puzzle.Yactive)
+       // var DeepCopyData = JSON.parse(JSON.stringify(puzzle.puzzle))
+        var clone = [];
+        for (var i=0; i<puzzle.puzzle.length; i++) {
+            clone.push( puzzle.puzzle[i].slice(0));
+        }
+        return new Puzzle(puzzle.sub,clone,puzzle.Xactive,puzzle.Yactive)
         //[...] Operator clone a puzzle array
     }
     //Multimedia
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(2);
+        puzzle.randomizePuzzle(20);
         return puzzle;
     }
 
