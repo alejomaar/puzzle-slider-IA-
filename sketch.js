@@ -1,7 +1,7 @@
 var size=0; //grafica
 var xactive=0;
 var yactive=0;
-var subdivitions = 3;
+var subdivitions = 5;
 var puzzle;
 function setup(){
     puzzle =  Puzzle.IdentityPuzzle(subdivitions);

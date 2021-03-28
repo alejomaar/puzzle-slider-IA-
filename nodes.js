@@ -1,71 +1,103 @@
-
+/*
+var node = new Node(puzzle);
+node.DeepFirst();
+*/
 
 class Node{
-    constructor(data,parent=null,lastMove=null){  
+    constructor(data,parent=null,lastMove=null,depth=null){  
         this.data = data;
         this.parent = parent;
         this.children = [];
         this.lastMove = lastMove;
+        this.MoveExplored = [];
+        this.depth = depth;
         //this.sub = this.data.length;
     }
-    AddBranch(depth){
-        if(depth>0){
-            var Move = ["right","up","left","down"];
-            Move = this.data.constrainMove(Move);
 
-            //Remove Last movement 
-            if(this.parent!==null){
-               // console.log("Constrain:(-)"+this.lastMove);
-                Move = this.data.constrainReturn(Move,this.lastMove);
-            }
-            //Add childrens avaibles
-
-            if(Move.includes("right")){
-                //console.log("Depth:"+depth+" Move:Right");
-                this.generateChildren(0,1,depth,"right");
-            }
-            if(Move.includes("up")){
-                //console.log("Depth:"+depth+" Move:Up");
-                this.generateChildren(1,0,depth,"up");
-            }
-            if(Move.includes("left")){
-               // console.log("Depth:"+depth+" Move:Left");
-                this.generateChildren(0,-1,depth,"left");
-            }
-            if(Move.includes("down")){
-                ///console.log("Depth:"+depth+" Move:Down");
-                this.generateChildren(-1,0,depth,"down");
+    DeepFirst(){
+        var currentNode= this;
+        var maxdepth = 5;
+        //currentNode.depth=0;
+        //Searching in the first branch
+        for(var deep=0;deep<maxdepth;deep++){
+            var MoveTxt = this.SelectMoveTxt(currentNode);
+            var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
+            if(isWin)
+                break;
+            else{
+                console.log(childrenNode.data.puzzle)
+                currentNode = childrenNode;
+                console.log(childrenNode.depth)
             }
         }
-           
+
+        //currentNode = currentNode.parent;
+
+
+
     }
-    generateChildren(Ymove,Xmove,depth,lastMoveChildren){
+    SelectMoveTxt(currentNode){
+        //Posible movements
+        var Move = ["right","up","left","down"];
+        //Add constrains to movements
+        Move = currentNode.data.constrainMove(Move);       
+        if(currentNode.parent!==null){
+            Move = currentNode.data.constrainReturn(Move,currentNode.lastMove);
+        }
+        //Select any movement posible 
+        var MoveSelected = currentNode.random(Move);
+        //Add to move explored
+        currentNode.MoveExplored.push(MoveSelected);
+        return MoveSelected;
+    }
+
+    SelectMove(MoveRandom){
+        switch(MoveRandom){
+            case "right":
+                return [0,1];    
+            case "up":
+                return [1,0];   
+            case "left":
+                return[0,-1];   
+            case "down":
+                return[-1,0];   
+        }
+    }
+
+    generateChildren(node,lastMoveChildren){
+        var [MoveY,MoveX]= node.SelectMove(lastMoveChildren);
+        console.log("Move:"+lastMoveChildren+" X:"+MoveX+" Y:"+MoveY)
+        //console.log("Move:"+MoveSelected+" X:"+MoveX+" Y:"+MoveY)
         //Copy actual puzzle
         var ChildrenCopy = Puzzle.CopyPuzzle(this.data);
         //Move puzzle to new position
         [yactive,xactive]= ChildrenCopy.activeIndex();
-        ChildrenCopy.updateValues(yactive+ Ymove,xactive+Xmove);
-       // console.log("Gane:"+ChildrenCopy.isObjective());
+        ChildrenCopy.updateValues(yactive+ MoveY,xactive+MoveX);
         //console.log(ChildrenCopy.puzzle);
         //Add to tree
-        var newNode = new Node(ChildrenCopy,this,lastMoveChildren);
+        var newNode = new Node(ChildrenCopy,this,lastMoveChildren,node.depth+1);
         this.children.push(newNode);
-        if(ChildrenCopy.isObjective()){
+        var isWin = ChildrenCopy.isObjective();
+        if(isWin){
             console.log("Gane");
             this.PrintRute(newNode);
         }
-        //Generate new Childrens
-        newNode.AddBranch(depth-1);     
+        return [newNode,isWin];
     }
 
+    random(values) {
+        var randomvalue = Math.floor(Math.random()*values.length)
+        return values[randomvalue];
+    }
+    
+    
+
     PrintRute(NodeWinner){
-        
         var currentNode = NodeWinner;
         while(currentNode.parent!=null){
             console.log(currentNode.lastMove);
             currentNode = currentNode.parent;
         }
-        
     }
 
     constrainReturn(Move){
@@ -92,11 +124,11 @@ class Puzzle{
         return new Puzzle(puzzle.sub,DeepCopyData,puzzle.Xactive,puzzle.Yactive)
         //[...] Operator clone a puzzle array
     }
-    //Multimedia hpta vida gonorrea :'v mk ya, quiero disfrutar semana santa alv
+    //Multimedia
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(6);
+        puzzle.randomizePuzzle(2);
         return puzzle;
     }
 
