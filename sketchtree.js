@@ -8,21 +8,45 @@ function preload(){
 }
 
 function setup(){
-    createCanvas( window.innerWidth,window.innerHeight);
+    widthWindow = window.innerWidth;
+    heightWindow =window.innerHeight;
+    if(MaxWidth()>widthWindow)
+        widthWindow= MaxWidth();
+    if(MaxHeight()>heightWindow)
+        heightWindow= MaxHeight();
+    
+    
+    createCanvas( widthWindow,window.innerHeight);
     background(255,0,0);
     drawTree();
+    //KeyLastLevel = Object.keys(Tree).pop();
+    //console.log(MaxWidth()*80*2)
     //drawpuzzle([[0,7,1],[2,3,4],[5,6,8]],20,20);
+}
+function MaxWidth(){
+    var MaxWidth= 0;
+    Object.keys(Tree).forEach(key => {
+        if(Tree[key].length>MaxWidth)
+            MaxWidth=Tree[key].length;
+    });
+    return MaxWidth*60*1.05;
+}
+function MaxHeight(){
+    return Object.keys(Tree).length*60*1.2
 }
 
 function drawTree(){
     var y=20;
     var parentKey=null;
+    var lastMargin=0;
     Object.keys(Tree).forEach(key => {
         var NodesNumber = Tree[key].length;
         //var SpentSpace =NodesNumber*60;
         //var AvaibleSpace = width-SpentSpace;
         //var Margin = AvaibleSpace/(NodesNumber+1);
         var Margin = (width-NodesNumber*60)/(NodesNumber+1);
+        //Margin = (lastMargin>Margin)?lastMargin:Margin;
+        
         var x= Margin;
         
         
@@ -34,6 +58,7 @@ function drawTree(){
         });
         y+=90;
         parentKey =  key;
+        lastMargin= Margin;
         //console.log("///");
         //console.log("A:"+AvaibleSpace+"M:"+Margin);
         //console.log( Tree[key]);
@@ -48,7 +73,7 @@ function drawConnections(xi, yi,node,lastKey){
         var MarginLast = (width-lengthLastLevel*60)/(lengthLastLevel+1);
         var xf = (idparent+1)*MarginLast+idparent*60;
         var yf = yi-30;
-        strokeWeight(4);
+        strokeWeight(2);
         stroke(0,0,0);
         line(xi+30,yi, xf+30, yf);
     }
