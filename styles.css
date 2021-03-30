@@ -76,7 +76,7 @@ span {
           flex-direction: column;
 }
 
-button {
+.button {
   background-color: #d41a10;
   color: white;
   border-radius: 2rem;

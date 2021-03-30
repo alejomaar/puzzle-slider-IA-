@@ -67,7 +67,7 @@ class Node{
         var newNodes= [];
        // var iterations=0;
         var childrenNode;
-        while(depth<=2 ){
+        while(depth<=4 ){
            // console.log("Level:  "+depth);
             for(var i=0;i<currentNodes.length;i++){
                 var node = currentNodes[i];
@@ -209,9 +209,7 @@ class Node{
     }
 
     JSON(){
-        var Tree = {"Level0":[],
-        "Level1":[],
-        "Level2":[]
+        var Tree = {"Level0":[]
         }
 
         var currentNodes = [this];
@@ -223,19 +221,22 @@ class Node{
         nodeObject["idparent"]=-1;
         Tree["Level0"].push(nodeObject)
 
-        for(var iter=1;iter<3;iter++){  
+        for(var iter=1;iter<=3;iter++){
+            Tree["Level"+iter]=[]; 
+            var Xindex =0; 
             //Para cada nodo en el nivel actual
             currentNodes.forEach((node,indexparent) => {
                 //Para cada hijo de los nodos en el nivel actual
                 node.children.forEach((children,index)=>{
                     var nodeObject = {};
                     nodeObject["data"]= children.data.puzzle;
-                    nodeObject["id"]= index;
+                    nodeObject["id"]= Xindex;
                     nodeObject["idparent"]=indexparent;
                     //Add to new breadth search
                     newNodes.push(children);
                     //añadir al json
                     Tree["Level"+iter].push(nodeObject)
+                    Xindex++;
                 });           
             });
             currentNodes = newNodes;
@@ -265,7 +266,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(3);
+        puzzle.randomizePuzzle(8);
         return puzzle;
     }
 

@@ -40,7 +40,7 @@
                     <button>Objetivo </button>
                 </div>
                 <div class="box">
-                    <button id="tree">Ver Arbol </button>
+                    <a href="tree.html" class="button" id="tree">Ver Arbol </a>
                 </div>
             </div>          
         </div>
@@ -49,23 +49,7 @@
     <script src="nodes.js"></script>
     <script src="render.js"></script>
     <script src="sketch.js"></script> 
-    <script>
-        var treeButton = document.getElementById("tree");
-
-        treeButton.onclick = function(){
-            var Roa = {"Nombre":"Roa","Edad":35,"Pais":"Polombia"};
-            var RoaJson = JSON.stringify(Roa);
-            var blob = new Blob([RoaJson], {type: "application/json"});
-            var url  = URL.createObjectURL(blob);
-
-            var a = document.createElement('a');
-            a.download    = "backup.json";
-            a.href        = url;
-            a.textContent = "Download backup.json";
-        }
-        
-
-    </script>
+    <script src="database.js"> </script>
    
 </body>
 </html>
