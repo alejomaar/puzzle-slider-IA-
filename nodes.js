@@ -27,43 +27,116 @@ class Node{
 
     DeepFirst(){
         var currentNode = this;
-        var maxdepth = 13;
-        //Search in all branch
-        while(currentNode.depth<maxdepth){
-            var MoveTxt = currentNode.SelectMoveTxt();
-            var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
+        var maxdepth = 16;
+        while((currentNode.isExplored() && currentNode.isRoot())==false){
+            //Search only one branch to the end
+            while(currentNode.depth<maxdepth){
+                var MoveTxt = currentNode.SelectMoveTxt();
+                var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
+                if(isWin){
+                    console.log("Gane");
+                    this.PrintRute(childrenNode);
+                    break;
+                }                   
+                else{
+                    //console.log("Depth: "+childrenNode.depth);
+                    //console.log(childrenNode.data.puzzle);
+                    currentNode = childrenNode;
+                }
+            }
             if(isWin)
                 break;
             else{
-                //console.log("Depth: "+childrenNode.depth);
-                //console.log(childrenNode.data.puzzle);
-                currentNode = childrenNode;
-            }
-        }
-        //Change of branch
-        if(!isWin){
-            currentNode= currentNode.parent;
-            var iscompleted = false;
-            //Select no branch explored
-            while(currentNode.isExplored()){
-                if(currentNode.isRoot()){
-                    iscompleted=true;
-                    break;
+                //Change of branch
+                currentNode= currentNode.parent;
+                //Select no branch explored
+                while(currentNode.isExplored()){
+                    if(currentNode.isRoot()){
+                        break;
+                    }
+                    currentNode = currentNode.parent;
                 }
-                var lastNode = currentNode;
-                currentNode = currentNode.parent;
-                //delete lastNode;
-                currentNode.children.splice(currentNode.children.indexOf(lastNode),1)
             }
-            //end search, if all nodes have been searched
-            if(!iscompleted)
-                currentNode.DeepFirst();
-            
-        }
-        
-        
-        
+        }     
     }
+
+    Breadthfirst(){
+        var isWin = false;
+        var depth = 0;
+        var currentNodes = [this];
+        var newNodes= [];
+       // var iterations=0;
+        var childrenNode;
+        while(depth<=2 ){
+           // console.log("Level:  "+depth);
+            for(var i=0;i<currentNodes.length;i++){
+                var node = currentNodes[i];
+                //console.log(node.AvaibleMovements)
+                if(node.AvaibleMovements.includes("right")){
+                    let Roita = node.generateChildren(node,"right");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                   // [childrenNode,isWin]=  node.generateChildren(node,"right");
+                    if(isWin){
+                        console.log("Gane");
+                        this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                if(node.AvaibleMovements.includes("up") && isWin==false ){
+                    let Roita =  node.generateChildren(node,"up");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                    if(isWin){
+                        console.log("Gane");
+                        this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                if(node.AvaibleMovements.includes("left") && isWin==false ){
+                    let Roita =  node.generateChildren(node,"left");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                    if(isWin){
+                        console.log("Gane");
+                        this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                
+                if(node.AvaibleMovements.includes("down") && isWin==false ){
+                    let Roita =  node.generateChildren(node,"down");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                    if(isWin){
+                        console.log("Gane");
+                        this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                
+            }
+            if(isWin==true)
+                break;
+            
+            currentNodes= newNodes;
+            newNodes =[];
+            depth++;
+        }
+
+        
+        //includes
+    }
+
+
     isExplored(){
         if(this.AvaibleMovements.length==0)
             return true;
@@ -106,8 +179,6 @@ class Node{
 
     generateChildren(node,lastMoveChildren){
         var [MoveY,MoveX]= node.SelectMove(lastMoveChildren);
-       // console.log("Move:"+lastMoveChildren+" X:"+MoveX+" Y:"+MoveY)
-        //console.log("Move:"+MoveSelected+" X:"+MoveX+" Y:"+MoveY)
         //Copy actual puzzle
         var ChildrenCopy = Puzzle.CopyPuzzle(this.data);
         //Move puzzle to new position
@@ -118,10 +189,7 @@ class Node{
         var newNode = new Node(ChildrenCopy,this,lastMoveChildren,node.depth+1);
         this.children.push(newNode);
         var isWin = ChildrenCopy.isObjective();
-        if(isWin){
-            console.log("Gane");
-            this.PrintRute(newNode);
-        }
+        
         return [newNode,isWin];
     }
 
@@ -138,6 +206,43 @@ class Node{
             console.log("D:"+currentNode.depth+"Move:"+ currentNode.lastMove);
             currentNode = currentNode.parent;
         }
+    }
+
+    JSON(){
+        var Tree = {"Level0":[],
+        "Level1":[],
+        "Level2":[]
+        }
+
+        var currentNodes = [this];
+        var newNodes = [];
+
+        var nodeObject = {};
+        nodeObject["data"]= this.data.puzzle;
+        nodeObject["id"]= 0;
+        nodeObject["idparent"]=-1;
+        Tree["Level0"].push(nodeObject)
+
+        for(var iter=1;iter<3;iter++){  
+            //Para cada nodo en el nivel actual
+            currentNodes.forEach((node,indexparent) => {
+                //Para cada hijo de los nodos en el nivel actual
+                node.children.forEach((children,index)=>{
+                    var nodeObject = {};
+                    nodeObject["data"]= children.data.puzzle;
+                    nodeObject["id"]= index;
+                    nodeObject["idparent"]=indexparent;
+                    //Add to new breadth search
+                    newNodes.push(children);
+                    //añadir al json
+                    Tree["Level"+iter].push(nodeObject)
+                });           
+            });
+            currentNodes = newNodes;
+            newNodes=[];
+        }
+        //console.log(Tree);
+        return Tree;
     }
 
    
@@ -160,7 +265,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(20);
+        puzzle.randomizePuzzle(3);
         return puzzle;
     }
 

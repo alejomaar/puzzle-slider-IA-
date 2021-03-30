@@ -1,12 +1,13 @@
 var size=0; //grafica
 var xactive=0;
 var yactive=0;
-var subdivitions = 4;
+var subdivitions = 3;
 var puzzle;
 function setup(){
     puzzle =  Puzzle.IdentityPuzzle(subdivitions);
     //UI preparate
-    createCanvas(500,500);
+    var MyCanvas= createCanvas(500,500);
+    MyCanvas.parent("puzzle");
     background(0,0,0);
     textSize(32);
     //Render 
