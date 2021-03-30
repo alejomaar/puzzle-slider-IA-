@@ -55,12 +55,15 @@
         var node = new Node(puzzle);
         node.Breadthfirst();
         var json = node.JSON();
+        ClearData();
         addData(json);
     }
     document.getElementById("Profundidad limitada").onclick = function(){
         var node = new Node(puzzle);
         node.DeepFirst();
         var json = node.JSON();
+        console.log(json);
+        ClearData();
         addData(json);
     }
         

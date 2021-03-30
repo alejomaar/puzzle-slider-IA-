@@ -27,7 +27,7 @@ class Node{
 
     DeepFirst(){
         var currentNode = this;
-        var maxdepth = 16;
+        var maxdepth = 6;
         while((currentNode.isExplored() && currentNode.isRoot())==false){
             //Search only one branch to the end
             while(currentNode.depth<maxdepth){
@@ -221,7 +221,7 @@ class Node{
         nodeObject["idparent"]=-1;
         Tree["Level0"].push(nodeObject)
 
-        for(var iter=1;iter<=3;iter++){
+        for(var iter=1;iter<=10;iter++){
             Tree["Level"+iter]=[]; 
             var Xindex =0; 
             //Para cada nodo en el nivel actual
@@ -239,6 +239,8 @@ class Node{
                     Xindex++;
                 });           
             });
+            if(newNodes.length==0)
+                break;
             currentNodes = newNodes;
             newNodes=[];
         }
@@ -266,7 +268,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(8);
+        puzzle.randomizePuzzle(5);
         return puzzle;
     }
 

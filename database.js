@@ -37,4 +37,10 @@ if(indexedDB){
            
         }
     }
+
+    function ClearData(){
+        const transaction = db.transaction(['Tree'],'readwrite');
+        const objectStore = transaction.objectStore('Tree');
+        const request = objectStore.clear(); 
+    }
 }
