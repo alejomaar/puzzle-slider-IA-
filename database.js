@@ -29,9 +29,12 @@ if(indexedDB){
         const request = objectStore.openCursor();
         
         request.onsuccess = (e)=>{
+            if(e.target.result){
+                console.log(e.target.result.value);
+                Tree = e.target.result.value;
+            }
             //return e.target.result.value;
-           console.log(e.target.result.value);
-           Tree = e.target.result.value;
+           
         }
     }
 }

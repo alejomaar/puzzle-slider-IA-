@@ -22,8 +22,8 @@
                 <div class="box">
                     <span>Metodos</span>
                     <div class="listbuttons">
-                        <button>Valor 1 </button>
-                        <button>Valor 2 </button>
+                        <button id="Anchura">Valor 1 </button>
+                        <button id="Profundidad limitada">Valor 2 </button>
                         <button>Valor 3 </button>
                         <button>Valor 4 </button>
                     </div>
@@ -50,6 +50,21 @@
     <script src="render.js"></script>
     <script src="sketch.js"></script> 
     <script src="database.js"> </script>
+    <script >
+    document.getElementById("Anchura").onclick = function(){
+        var node = new Node(puzzle);
+        node.Breadthfirst();
+        var json = node.JSON();
+        addData(json);
+    }
+    document.getElementById("Profundidad limitada").onclick = function(){
+        var node = new Node(puzzle);
+        node.DeepFirst();
+        var json = node.JSON();
+        addData(json);
+    }
+        
+    </script>
    
 </body>
 </html>
