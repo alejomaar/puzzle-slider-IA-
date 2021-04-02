@@ -22,10 +22,10 @@
                 <div class="box">
                     <span>Metodos</span>
                     <div class="listbuttons">
-                        <button id="Anchura">Valor 1 </button>
-                        <button id="Profundidad limitada">Valor 2 </button>
-                        <button>Valor 3 </button>
-                        <button>Valor 4 </button>
+                        <a class="button" id="Anchura">Anchura </a>
+                        <a class="button" id="Profundidad">Profundidad </a>
+                        <a class="button" id="Profundidad limitada">Profundidad limitada </a>
+                        <a class="button" id="Iterativa">Profundidad iterativa </a>
                     </div>
                 </div>
                 <div class="box">
@@ -37,7 +37,7 @@
                     <input type="number" name="" id="">
                 </div>
                 <div class="box">
-                    <button>Objetivo </button>
+                    <a class="button">Establecer Objetivo</a>
                 </div>
                 <div class="box">
                     <a href="tree.html" class="button" id="tree">Ver Arbol </a>
@@ -58,9 +58,26 @@
         ClearData();
         addData(json);
     }
+    document.getElementById("Profundidad").onclick = function(){
+        var node = new Node(puzzle);
+        node.Deep();
+        var json = node.JSON();
+        console.log(json);
+        ClearData();
+        addData(json);
+    }
     document.getElementById("Profundidad limitada").onclick = function(){
         var node = new Node(puzzle);
-        node.DeepFirst();
+        node.DeepFirst(7);
+        var json = node.JSON();
+        console.log(json);
+        ClearData();
+        addData(json);
+    }
+    
+    document.getElementById("Iterativa").onclick = function(){
+        var node = new Node(puzzle);
+        node = node.DeepIterative(5);
         var json = node.JSON();
         console.log(json);
         ClearData();

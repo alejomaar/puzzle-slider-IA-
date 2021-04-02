@@ -14,10 +14,9 @@ function setup(){
         widthWindow= MaxWidth();
     if(MaxHeight()>heightWindow)
         heightWindow= MaxHeight();
-    
-    
-    createCanvas( widthWindow,window.innerHeight);
-    background(255,0,0);
+
+    createCanvas( widthWindow,heightWindow);
+    background(255,255,255);
     drawTree();
     //KeyLastLevel = Object.keys(Tree).pop();
     //console.log(MaxWidth()*80*2)
@@ -29,10 +28,10 @@ function MaxWidth(){
         if(Tree[key].length>MaxWidth)
             MaxWidth=Tree[key].length;
     });
-    return MaxWidth*60*1.05;
+    return MaxWidth*60*1.1;
 }
 function MaxHeight(){
-    return Object.keys(Tree).length*60*1.2
+    return Object.keys(Tree).length*60*1.5;
 }
 
 function drawTree(){

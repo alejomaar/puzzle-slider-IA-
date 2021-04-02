@@ -25,14 +25,15 @@ class Node{
         return Move;
     }
 
-    DeepFirst(){
+    DeepFirst(maxdepth){
         var currentNode = this;
-        var maxdepth = 6;
+        var isWin,childrenNode;
+       // var maxdepth = 10;
         while((currentNode.isExplored() && currentNode.isRoot())==false){
             //Search only one branch to the end
             while(currentNode.depth<maxdepth){
                 var MoveTxt = currentNode.SelectMoveTxt();
-                var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
+                [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
                 if(isWin){
                     console.log("Gane");
                     this.PrintRute(childrenNode);
@@ -57,7 +58,43 @@ class Node{
                     currentNode = currentNode.parent;
                 }
             }
-        }     
+        } 
+        return isWin;    
+    }
+
+    DeepIterative(maxdepth){
+        var isWin =false;
+        for(var i=1;i<=maxdepth;i++){
+            var TestNode = new Node(this.data);
+            isWin = TestNode.DeepFirst(i);
+            //isWin=new Node(this.data).DeepFirst(i); Funciona
+           // isWin = this.DeepFirst(i);
+            console.log("iter:"+i);
+            if(isWin)
+                break;
+            //this.children=[];
+            //this.AvaibleMovements = this.getAvaibleMovements();
+
+        }
+        return TestNode;
+        //return false;
+    }
+
+    Deep(){
+        var currentNode = this;
+        var maxdepth = 50;
+        while(currentNode.depth<maxdepth){
+            var MoveTxt = currentNode.SelectMoveTxt();
+            var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
+            if(isWin){
+                console.log("Gane");
+                this.PrintRute(childrenNode);
+                break;
+            }                   
+            else{
+                currentNode = childrenNode;
+            }
+        }
     }
 
     Breadthfirst(){
@@ -133,7 +170,6 @@ class Node{
         }
 
         
-        //includes
     }
 
 
@@ -150,12 +186,7 @@ class Node{
         else
             return false;
     }
-    /*constrainExplored(move){
-        this.MoveExplored.forEach(MovementDone=>{
-            if(move.includes(MovementDone))
-                move.splice(move.indexOf(MovementDone),1);
-        });
-    }*/
+    
     SelectMoveTxt(){
         //Select Posible movements
         var MoveSelected = this.random(this.AvaibleMovements);
@@ -221,7 +252,7 @@ class Node{
         nodeObject["idparent"]=-1;
         Tree["Level0"].push(nodeObject)
 
-        for(var iter=1;iter<=10;iter++){
+        for(var iter=1;iter<=50;iter++){
             Tree["Level"+iter]=[]; 
             var Xindex =0; 
             //Para cada nodo en el nivel actual
