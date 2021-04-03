@@ -24,10 +24,107 @@ class Node{
         }
         return Move;
     }
+    //Breadth-first search
+    BFS(){
+        var isWin = false,WinRoute =false;
+        var depth = 0;
+        var currentNodes = [this];
+        var newNodes= [];
+       // var iterations=0;
+        var childrenNode;
+        while(depth<=8 ){
+           // console.log("Level:  "+depth);
+            for(var i=0;i<currentNodes.length;i++){
+                var node = currentNodes[i];
+                //console.log(node.AvaibleMovements)
+                if(node.AvaibleMovements.includes("right")){
+                    let Roita = node.generateChildren(node,"right");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                   // [childrenNode,isWin]=  node.generateChildren(node,"right");
+                    if(isWin){
+                        console.log("Gane");
+                        WinRoute = this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                if(node.AvaibleMovements.includes("up") && isWin==false ){
+                    let Roita =  node.generateChildren(node,"up");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                    if(isWin){
+                        console.log("Gane");
+                        WinRoute = this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                if(node.AvaibleMovements.includes("left") && isWin==false ){
+                    let Roita =  node.generateChildren(node,"left");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                    if(isWin){
+                        console.log("Gane");
+                        WinRoute = this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                
+                if(node.AvaibleMovements.includes("down") && isWin==false ){
+                    let Roita =  node.generateChildren(node,"down");
+                    childrenNode = Roita[0];
+                    isWin = Roita[1];
+                    if(isWin){
+                        console.log("Gane");
+                        WinRoute = this.PrintRute(childrenNode);
+                        break;
+                    }
+                    //console.log(childrenNode.data.puzzle);
+                    newNodes.push(childrenNode);
+                }
+                
+            }
+            if(isWin==true)
+               break;
+            
+            currentNodes= newNodes;
+            newNodes =[];
+            depth++;
+        }
+        return [isWin,WinRoute]
 
-    DeepFirst(maxdepth){
+        
+    }
+    //Depth-first search
+    DFS(){
+        var isWin = false,WinRoute =false;
+        var childrenNode;
         var currentNode = this;
-        var isWin,childrenNode;
+        var maxdepth = 50;
+        while(currentNode.depth<maxdepth){
+            var MoveTxt = currentNode.SelectMoveTxt();
+            [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
+            if(isWin){
+                console.log("Gane");
+                WinRoute= this.PrintRute(childrenNode);
+                break;
+            }                   
+            else{
+                currentNode = childrenNode;
+            }
+        }
+        return [isWin,WinRoute];
+    }
+    //Deep limited search
+    DLS(maxdepth){
+        var isWin = false,WinRoute =false;
+        var currentNode = this;
+        var childrenNode;
        // var maxdepth = 10;
         while((currentNode.isExplored() && currentNode.isRoot())==false){
             //Search only one branch to the end
@@ -36,12 +133,10 @@ class Node{
                 [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
                 if(isWin){
                     console.log("Gane");
-                    this.PrintRute(childrenNode);
+                    WinRoute= this.PrintRute(childrenNode);
                     break;
                 }                   
                 else{
-                    //console.log("Depth: "+childrenNode.depth);
-                    //console.log(childrenNode.data.puzzle);
                     currentNode = childrenNode;
                 }
             }
@@ -59,118 +154,23 @@ class Node{
                 }
             }
         } 
-        return isWin;    
+        return [isWin,WinRoute];    
     }
-
-    DeepIterative(maxdepth){
-        var isWin =false;
+    //Iterative deepening depth-first search
+    IDS(maxdepth){
+        var results,newNode;
         for(var i=1;i<=maxdepth;i++){
-            var TestNode = new Node(this.data);
-            isWin = TestNode.DeepFirst(i);
-            //isWin=new Node(this.data).DeepFirst(i); Funciona
-           // isWin = this.DeepFirst(i);
-            console.log("iter:"+i);
-            if(isWin)
-                break;
-            //this.children=[];
-            //this.AvaibleMovements = this.getAvaibleMovements();
-
+            newNode = new Node(this.data);
+            results=newNode.DLS(i);
+            if(results[0])
+                break;            
         }
-        return TestNode;
-        //return false;
+        this.DLS(i);
+        console.log(this);
+        return results;
     }
-
-    Deep(){
-        var currentNode = this;
-        var maxdepth = 50;
-        while(currentNode.depth<maxdepth){
-            var MoveTxt = currentNode.SelectMoveTxt();
-            var [childrenNode,isWin]=  currentNode.generateChildren(currentNode,MoveTxt);
-            if(isWin){
-                console.log("Gane");
-                this.PrintRute(childrenNode);
-                break;
-            }                   
-            else{
-                currentNode = childrenNode;
-            }
-        }
-    }
-
-    Breadthfirst(){
-        var isWin = false;
-        var depth = 0;
-        var currentNodes = [this];
-        var newNodes= [];
-       // var iterations=0;
-        var childrenNode;
-        while(depth<=4 ){
-           // console.log("Level:  "+depth);
-            for(var i=0;i<currentNodes.length;i++){
-                var node = currentNodes[i];
-                //console.log(node.AvaibleMovements)
-                if(node.AvaibleMovements.includes("right")){
-                    let Roita = node.generateChildren(node,"right");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                   // [childrenNode,isWin]=  node.generateChildren(node,"right");
-                    if(isWin){
-                        console.log("Gane");
-                        this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                if(node.AvaibleMovements.includes("up") && isWin==false ){
-                    let Roita =  node.generateChildren(node,"up");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                    if(isWin){
-                        console.log("Gane");
-                        this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                if(node.AvaibleMovements.includes("left") && isWin==false ){
-                    let Roita =  node.generateChildren(node,"left");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                    if(isWin){
-                        console.log("Gane");
-                        this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                
-                if(node.AvaibleMovements.includes("down") && isWin==false ){
-                    let Roita =  node.generateChildren(node,"down");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                    if(isWin){
-                        console.log("Gane");
-                        this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                
-            }
-            if(isWin==true)
-                break;
-            
-            currentNodes= newNodes;
-            newNodes =[];
-            depth++;
-        }
-
-        
-    }
+    
+    
 
 
     isExplored(){
@@ -213,7 +213,7 @@ class Node{
         //Copy actual puzzle
         var ChildrenCopy = Puzzle.CopyPuzzle(this.data);
         //Move puzzle to new position
-        [yactive,xactive]= ChildrenCopy.activeIndex();
+        var [yactive,xactive]= ChildrenCopy.activeIndex();
         ChildrenCopy.updateValues(yactive+ MoveY,xactive+MoveX);
         //console.log(ChildrenCopy.puzzle);
         //Add to tree
@@ -233,10 +233,13 @@ class Node{
 
     PrintRute(NodeWinner){
         var currentNode = NodeWinner;
+        var Movements=[];
         while(currentNode.parent!=null){
-            console.log("D:"+currentNode.depth+"Move:"+ currentNode.lastMove);
+            Movements.push(currentNode.lastMove)
+            //console.log("D:"+currentNode.depth+"Move:"+ currentNode.lastMove);
             currentNode = currentNode.parent;
         }
+        return Movements.reverse();
     }
 
     JSON(){
@@ -270,11 +273,14 @@ class Node{
                     Xindex++;
                 });           
             });
-            if(newNodes.length==0)
+            if(newNodes.length==0){
+                delete Tree["Level"+iter];
                 break;
+            }
             currentNodes = newNodes;
             newNodes=[];
         }
+
         //console.log(Tree);
         return Tree;
     }
@@ -299,7 +305,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(5);
+        puzzle.randomizePuzzle(7);
         return puzzle;
     }
 

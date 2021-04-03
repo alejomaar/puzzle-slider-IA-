@@ -1,6 +1,6 @@
 var size=0; //grafica
-var xactive=0;
-var yactive=0;
+//var xactive=0;
+//var yactive=0;
 var subdivitions = 3;
 var puzzle;
 function setup(){
@@ -12,11 +12,6 @@ function setup(){
     textSize(32);
     //Render 
     squares(subdivitions,puzzle.Xactive,puzzle.Yactive);
-}
-function getIndexActive(){
-    lastIndex = subdivitions-1;
-    //console.log(lastIndex)
-    return [lastIndex,lastIndex]
 }
 
 function squares(sub,xactive,yactive){
@@ -45,6 +40,28 @@ function checkwin(){
         }
     }
     return true;
+}
+
+function AutoResolve(node,movementsTxt){
+    var indexMove=0;
+    //Update the interfaz with the solution movements
+    var timer = setInterval(()=>{
+        //Get active and actual move
+        [yactive,xactive]= puzzle.activeIndex();
+        [MoveY,MoveX] = node.SelectMove(movementsTxt[indexMove]);
+        //Update data and interfax
+        updatePaint(yactive+MoveY,xactive+MoveX);
+        puzzle.updateValues(yactive+MoveY,xactive+MoveX);
+        //Finish operation when index is last
+        if(indexMove>=movementsTxt.length-1){
+            document.getElementById("Titulo").innerHTML="Gane";
+            clearInterval(timer);
+        }
+        indexMove++;
+    },500)
+
+    
+    
 }
 
 

@@ -32,9 +32,7 @@ function Noempty(xactive,yactive){
     rect(xactive*size,yactive*size,size,size)
 }
 
-function AutoResolve(movements){
 
-}
 
 
 

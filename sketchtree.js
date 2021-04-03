@@ -37,13 +37,17 @@ function MaxHeight(){
 function drawTree(){
     var y=20;
     var parentKey=null;
-    var lastMargin=0;
+    var lastMargin=Infinity;
+
     Object.keys(Tree).forEach(key => {
         var NodesNumber = Tree[key].length;
         //var SpentSpace =NodesNumber*60;
         //var AvaibleSpace = width-SpentSpace;
         //var Margin = AvaibleSpace/(NodesNumber+1);
         var Margin = (width-NodesNumber*60)/(NodesNumber+1);
+        if(Margin>lastMargin)
+            Margin=lastMargin;
+            //console.log(Margin);
         //Margin = (lastMargin>Margin)?lastMargin:Margin;
         
         var x= Margin;
