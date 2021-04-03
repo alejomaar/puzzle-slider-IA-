@@ -30,66 +30,39 @@ class Node{
         var depth = 0;
         var currentNodes = [this];
         var newNodes= [];
-       // var iterations=0;
-        var childrenNode;
-        while(depth<=8 ){
+        var node,childrenNode;
+        function Add(MoveTxt){
+            if(node.AvaibleMovements.includes(MoveTxt)){
+                [childrenNode,isWin]= node.generateChildren(node,MoveTxt);
+                newNodes.push(childrenNode);
+                if(isWin){
+                    console.log("Gane");
+                    console.log("Aqui:"+isWin)
+                    WinRoute = childrenNode.PrintRute(childrenNode);
+                    return true;
+                }
+            }
+            return false;
+        }
+        while(depth<=20 ){
            // console.log("Level:  "+depth);
             for(var i=0;i<currentNodes.length;i++){
-                var node = currentNodes[i];
+                node = currentNodes[i];
                 //console.log(node.AvaibleMovements)
-                if(node.AvaibleMovements.includes("right")){
-                    let Roita = node.generateChildren(node,"right");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                   // [childrenNode,isWin]=  node.generateChildren(node,"right");
-                    if(isWin){
-                        console.log("Gane");
-                        WinRoute = this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                if(node.AvaibleMovements.includes("up") && isWin==false ){
-                    let Roita =  node.generateChildren(node,"up");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                    if(isWin){
-                        console.log("Gane");
-                        WinRoute = this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                if(node.AvaibleMovements.includes("left") && isWin==false ){
-                    let Roita =  node.generateChildren(node,"left");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                    if(isWin){
-                        console.log("Gane");
-                        WinRoute = this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                
-                if(node.AvaibleMovements.includes("down") && isWin==false ){
-                    let Roita =  node.generateChildren(node,"down");
-                    childrenNode = Roita[0];
-                    isWin = Roita[1];
-                    if(isWin){
-                        console.log("Gane");
-                        WinRoute = this.PrintRute(childrenNode);
-                        break;
-                    }
-                    //console.log(childrenNode.data.puzzle);
-                    newNodes.push(childrenNode);
-                }
-                
+                Add("right");
+                if(isWin)
+                    break;  
+                Add("up");
+                if(isWin)
+                    break;  
+                Add("left");
+                if(isWin)
+                    break;  
+                Add("down");
+                if(isWin)
+                    break;               
             }
-            if(isWin==true)
+            if(isWin)
                break;
             
             currentNodes= newNodes;
@@ -305,7 +278,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(7);
+        puzzle.randomizePuzzle(6);
         return puzzle;
     }
 
