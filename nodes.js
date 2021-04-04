@@ -36,8 +36,6 @@ class Node{
                 [childrenNode,isWin]= node.generateChildren(node,MoveTxt);
                 newNodes.push(childrenNode);
                 if(isWin){
-                    console.log("Gane");
-                    console.log("Aqui:"+isWin)
                     WinRoute = childrenNode.PrintRute(childrenNode);
                     return true;
                 }
@@ -278,7 +276,7 @@ class Puzzle{
     static IdentityPuzzle(subdivition){
         var puzzle =new Puzzle(subdivition,null,subdivition-1,subdivition-1);
         puzzle.puzzle = puzzle.fillPuzzle()
-        puzzle.randomizePuzzle(6);
+        puzzle.randomizePuzzle(10);
         return puzzle;
     }
 

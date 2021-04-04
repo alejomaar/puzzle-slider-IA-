@@ -30,7 +30,8 @@ if(indexedDB){
         
         request.onsuccess = (e)=>{
             if(e.target.result){
-                console.log(e.target.result.value);
+                
+                console.log("Primero",e.target.result.value);
                 Tree = e.target.result.value;
             }
             //return e.target.result.value;

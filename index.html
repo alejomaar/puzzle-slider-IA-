@@ -30,11 +30,11 @@
                 </div>
                 <div class="box">
                     <span>Iteraciones</span>
-                    <input type="number" name="" id="">
+                    <input id="iteraciones" type="number" max="20" name="" value="8">
                 </div>
                 <div class="box">
                     <span>Tamaño de puzzle</span>
-                    <input type="number" name="" id="">
+                    <input type="number" id="PuzzleSize" min="2" max="6" value="3">
                 </div>
                 <div class="box">
                     <span>Opciones</span>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="box">
-                    <span>Mensaje:</span>
+                    <span id="Mensaje">Mensaje:</span>
                 </div>
                 
             </div>          
@@ -58,52 +58,46 @@
     <script src="database.js"> </script>
     <script >
     document.getElementById("Anchura").onclick = function(){
-        var node = new Node(puzzle);
-        results = node.BFS();
-        if(results[0]){
-            AutoResolve(node,results[1]);
-        }
-        var json = node.JSON();
-        ClearData();
-        addData(json);
+        let node = new Node(puzzle);
+        method(node,node.BFS());
     }
     document.getElementById("Profundidad").onclick = function(){
-        var node = new Node(puzzle);
-        results = node.DFS();
-        if(results[0])
-            AutoResolve(node,results[1]);
-        else
-            document.getElementById("Titulo").innerHTML="Solucion no encontrada :(";
-        var json = node.JSON();
-        console.log(json);
-        ClearData();
-        addData(json);
+        let node = new Node(puzzle);
+        method(node,node.DFS());
     }
     document.getElementById("Profundidad limitada").onclick = function(){
-        var node = new Node(puzzle);
-        results = node.DLS(8);
-        if(results[0])
-            AutoResolve(node,results[1]);
-        else
-            document.getElementById("Titulo").innerHTML="Solucion no encontrada :(";
-        var json = node.JSON();
-        console.log(json);
-        ClearData();
-        addData(json);
+        let node = new Node(puzzle);
+        let iter =  parseInt(document.getElementById("iteraciones").value)
+        method(node,node.DLS(iter));
     }
     
     document.getElementById("Iterativa").onclick = function(){
-        var node = new Node(puzzle);
-        results = node.IDS(8);
-        if(results[0])
+        let node = new Node(puzzle);
+        let iter =  parseInt(document.getElementById("iteraciones").value)
+        method(node,node.IDS(iter));
+    }
+
+    function method(node,callback){
+        results = callback;
+        console.log("Voy 1");
+        if(results[0]){
             AutoResolve(node,results[1]);
+            console.log("Voy 2");
+        }
         else
-            document.getElementById("Titulo").innerHTML="Solucion no encontrada :(";
+            document.getElementById("Mensaje").innerHTML="Mensaje:Solucion no encontrada :(";
         var json = node.JSON();
-        console.log(json);
+        console.log("Voy 3");
+        console.log(results[1]);
         ClearData();
         addData(json);
     }
+
+    document.getElementById("PuzzleSize").onchange =function(){
+        redrawSetup();
+        //console.log("PuzzleSize:"+ parseInt(document.getElementById("PuzzleSize").value));
+    }
+    
         
     </script>
    

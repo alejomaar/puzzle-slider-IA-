@@ -1,9 +1,9 @@
 var size=0; //grafica
-//var xactive=0;
-//var yactive=0;
-var subdivitions = 4;
+var subdivitions;
 var puzzle;
+
 function setup(){
+    subdivitions= 3;
     puzzle =  Puzzle.IdentityPuzzle(subdivitions);
     //UI preparate
     var MyCanvas= createCanvas(500,500);
@@ -11,6 +11,14 @@ function setup(){
     background(0,0,0);
     textSize(32);
     //Render 
+    squares(subdivitions,puzzle.Xactive,puzzle.Yactive);
+}
+
+function redrawSetup(){
+    subdivitions= parseInt(document.getElementById("PuzzleSize").value);
+    puzzle =  Puzzle.IdentityPuzzle(subdivitions);
+    background(0,0,0);
+    fill(color('white'));
     squares(subdivitions,puzzle.Xactive,puzzle.Yactive);
 }
 
@@ -49,12 +57,14 @@ function AutoResolve(node,movementsTxt){
         //Get active and actual move
         [yactive,xactive]= puzzle.activeIndex();
         [MoveY,MoveX] = node.SelectMove(movementsTxt[indexMove]);
+        console.log("Active:",yactive,xactive)
+        //console.log(yactive+MoveY,xactive+MoveX)
         //Update data and interfax
         updatePaint(yactive+MoveY,xactive+MoveX);
         puzzle.updateValues(yactive+MoveY,xactive+MoveX);
         //Finish operation when index is last
         if(indexMove>=movementsTxt.length-1){
-            document.getElementById("Titulo").innerHTML="Gane";
+            document.getElementById("Mensaje").innerHTML="Mensaje: Victoria";
             clearInterval(timer);
         }
         indexMove++;
@@ -68,7 +78,10 @@ function AutoResolve(node,movementsTxt){
 function mouseClicked() {
     Xselected = Math.trunc(mouseX/size);
     Yselected = Math.trunc(mouseY/size);
-    if(isNear(Xselected,Yselected)){
+    CanvasLimitX = mouseX>0 && mouseX<width;
+    CanvasLimitY = mouseY>0 && mouseY<height;
+    CanvasLimit = CanvasLimitX&&CanvasLimitY;
+    if(isNear(Xselected,Yselected) && CanvasLimit){
         console.log("ismove")
         updatePaint(Yselected,Xselected);
         puzzle.updateValues(Yselected,Xselected);
@@ -83,9 +96,7 @@ function isNear(Xselected,Yselected){
     return Math.abs(Xselected-xactive)+Math.abs(Yselected-yactive)==1;
 }
 
-/*
-node = new Node(puzzle)
-node.AddBranch(2);
-*/
+
+
 
 
